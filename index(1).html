@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>🌍 Nos Voyages 💖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --pink: #ff4d88;
+      --pink-light: #ffe6f2;
+      --pink-mid: #ffc2d9;
+      --pink-dark: #cc2d60;
+      --white: #ffffff;
+      --text: #3d2030;
+      --gray: #888;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: var(--pink-light); height: 100dvh; overflow: hidden; color: var(--text); }
+
+    /* ── SCREENS ── */
+    .screen { position: fixed; inset: 0; z-index: 9999; display: none; }
+    .screen.active { display: flex; }
+
+    /* LOGIN */
+    #loginScreen {
+      background: linear-gradient(160deg, #ffe6f2 0%, #ffd0e8 60%, #ffb3d1 100%);
+      flex-direction: column; align-items: center; justify-content: center; padding: 24px;
+    }
+    .lock-emoji { font-size: 4rem; margin-bottom: 8px; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .lock-title { font-family: 'Pacifico', cursive; color: var(--pink); font-size: 2.4rem; text-shadow: 2px 3px 0 rgba(255,255,255,0.8); margin-bottom: 32px; text-align: center; }
+    .card { background: white; border-radius: 28px; padding: 32px 28px; box-shadow: 0 12px 50px rgba(255,77,136,0.18); width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 14px; }
+    .card label { font-weight: 700; font-size: 0.8rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+    .card input {
+      width: 100%; padding: 14px 18px; border: 2.5px solid var(--pink-mid);
+      border-radius: 50px; font-size: 1rem; font-family: 'Nunito', sans-serif;
+      outline: none; transition: border-color 0.2s;
+    }
+    .card input:focus { border-color: var(--pink); }
+    .btn-primary {
+      width: 100%; padding: 15px; background: var(--pink); color: white;
+      border: none; border-radius: 50px; font-size: 1.05rem; font-family: 'Nunito', sans-serif;
+      font-weight: 800; cursor: pointer; transition: 0.2s;
+    }
+    .btn-primary:hover { background: var(--pink-dark); transform: scale(1.03); }
+    .btn-primary:disabled { background: var(--pink-mid); cursor: not-allowed; transform: none; }
+    .err-msg { color: #ff0055; font-size: 0.85rem; text-align: center; min-height: 18px; font-weight: 600; }
+
+    /* APP */
+    #appScreen { display: none; flex-direction: column; }
+    #appScreen.active { display: flex; }
+    #map { flex: 1; }
+
+    .topbar {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      background: linear-gradient(to bottom, rgba(255,230,242,0.95) 70%, transparent);
+    }
+    .topbar-title { font-family: 'Pacifico', cursive; color: var(--pink); font-size: 1.6rem; text-shadow: 1px 2px 0 white; }
+    .topbar-actions { display: flex; gap: 8px; }
+    .icon-btn {
+      width: 44px; height: 44px; border-radius: 50%; background: white;
+      border: none; font-size: 1.2rem; cursor: pointer;
+      box-shadow: 0 3px 15px rgba(255,77,136,0.25);
+      display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    }
+    .icon-btn:hover { transform: scale(1.1); background: var(--pink-light); }
+
+    #addBtn {
+      position: absolute; bottom: 28px; right: 20px; z-index: 1000;
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--pink); color: white; font-size: 2rem;
+      border: none; cursor: pointer; box-shadow: 0 6px 25px rgba(255,77,136,0.5);
+      display: flex; align-items: center; justify-content: center; transition: 0.3s;
+    }
+    #addBtn:hover { transform: scale(1.1) rotate(90deg); background: var(--pink-dark); }
+
+    /* SHEET */
+    .overlay { position: fixed; inset: 0; background: rgba(61,32,48,0.4); z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .overlay.open { opacity: 1; pointer-events: all; }
+    .sheet {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 2001;
+      background: white; border-radius: 28px 28px 0 0;
+      padding: 0 20px 40px; max-height: 92dvh; overflow-y: auto;
+      transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.34,1.2,0.64,1);
+    }
+    .sheet.open { transform: translateY(0); }
+    .sheet-handle { width: 40px; height: 4px; background: var(--pink-mid); border-radius: 4px; margin: 14px auto 20px; }
+    .sheet-title { font-family: 'Pacifico', cursive; color: var(--pink); font-size: 1.5rem; margin-bottom: 20px; text-align: center; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .field label { font-weight: 700; font-size: 0.78rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+    .field input, .field textarea {
+      width: 100%; padding: 13px 16px; border: 2px solid #f0d0e0;
+      border-radius: 14px; font-size: 1rem; font-family: 'Nunito', sans-serif;
+      outline: none; transition: border-color 0.2s; color: var(--text);
+    }
+    .field input:focus, .field textarea:focus { border-color: var(--pink); }
+    .field textarea { resize: none; height: 80px; }
+    .coords-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .upload-area {
+      border: 2.5px dashed var(--pink-mid); border-radius: 14px;
+      padding: 20px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--pink-light);
+    }
+    .upload-area:hover { border-color: var(--pink); background: #ffd6e7; }
+    .upload-area input { display: none; }
+    .upload-icon { font-size: 2rem; }
+    .upload-area p { font-size: 0.9rem; color: var(--gray); margin-top: 6px; }
+
+    .preview-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .preview-item { position: relative; }
+    .preview-item img { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; display: block; }
+    .del-photo {
+      position: absolute; top: -6px; right: -6px; width: 20px; height: 20px;
+      background: var(--pink); color: white; border: none; border-radius: 50%;
+      font-size: 0.65rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+
+    .save-btn {
+      width: 100%; padding: 16px; background: var(--pink); color: white;
+      border: none; border-radius: 50px; font-size: 1.1rem; font-family: 'Nunito', sans-serif;
+      font-weight: 800; cursor: pointer; transition: 0.2s; margin-top: 10px;
+    }
+    .save-btn:disabled { background: var(--pink-mid); cursor: not-allowed; }
+    .save-btn:not(:disabled):hover { background: var(--pink-dark); }
+    .status-msg { text-align: center; font-size: 0.9rem; font-weight: 600; margin-top: 8px; min-height: 20px; }
+    .status-msg.ok { color: #2db37a; }
+    .status-msg.err { color: #ff0055; }
+
+    /* POPUP */
+    .leaflet-popup-content { font-family: 'Nunito', sans-serif; text-align: center; }
+    .popup-date { color: var(--gray); font-size: 0.8rem; }
+    .popup-text { margin: 6px 0; font-size: 0.9rem; }
+    .gallery { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+    .gallery img { width: 75px; height: 75px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
+    .gallery img:hover { transform: scale(1.15); }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="screen active">
+  <div class="lock-emoji">✈️</div>
+  <div class="lock-title">Nos Voyages 💖</div>
+  <div class="card">
+    <label>Email</label>
+    <input id="emailInput" type="email" placeholder="toi@email.com" autocomplete="email" />
+    <label>Mot de passe</label>
+    <input id="passInput" type="password" placeholder="••••••••" autocomplete="current-password" />
+    <div class="err-msg" id="errMsg"></div>
+    <button class="btn-primary" id="loginBtn">Entrer 🌍</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen" class="screen">
+  <div class="topbar">
+    <div class="topbar-title">🌍 Nos Voyages</div>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="replayBtn" title="Rejouer">✈️</button>
+      <button class="icon-btn" id="logoutBtn" title="Déconnexion">🚪</button>
+    </div>
+  </div>
+  <div id="map"></div>
+  <button id="addBtn">＋</button>
+</div>
+
+<!-- ADD TRIP SHEET -->
+<div class="overlay" id="overlay"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">Nouveau voyage 🗺️</div>
+
+  <div class="field">
+    <label>Nom du lieu</label>
+    <input id="tripName" type="text" placeholder="ex: Paris, France" />
+  </div>
+  <div class="coords-row">
+    <div class="field">
+      <label>Latitude</label>
+      <input id="tripLat" type="number" step="any" placeholder="48.8566" />
+    </div>
+    <div class="field">
+      <label>Longitude</label>
+      <input id="tripLng" type="number" step="any" placeholder="2.3522" />
+    </div>
+  </div>
+  <div style="text-align:center;margin:-6px 0 12px;font-size:0.8rem;color:var(--gray)">
+    💡 Trouve les coordonnées sur <a href="https://www.latlong.net" target="_blank" style="color:var(--pink)">latlong.net</a>
+  </div>
+  <div class="field">
+    <label>Date</label>
+    <input id="tripDate" type="date" />
+  </div>
+  <div class="field">
+    <label>Description</label>
+    <textarea id="tripDesc" placeholder="Notre premier voyage... 💕"></textarea>
+  </div>
+  <div class="field">
+    <label>Photos</label>
+    <div class="upload-area" id="uploadArea">
+      <input type="file" id="photoInput" accept="image/*" multiple />
+      <div class="upload-icon">📷</div>
+      <p>Appuie ici pour choisir des photos</p>
+    </div>
+    <div class="preview-grid" id="previewGrid"></div>
+  </div>
+
+  <button class="save-btn" id="saveBtn">Enregistrer le voyage 💾</button>
+  <div class="status-msg" id="statusMsg"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+// ══════════════════════════════════════════
+// 🔧 CONFIG — remplace ces 2 valeurs
+// ══════════════════════════════════════════
+const SUPABASE_URL  = 'https://qtvudrvkyalgbmeicyje.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_WjGnDJ_N0E1jdl9W18qZGQ_HLZlvtz6';
+// ══════════════════════════════════════════
+// Le mot de passe est géré par Supabase Auth
+// → personne ne peut le lire dans le code !
+// ══════════════════════════════════════════
+
+const BUCKET = 'trip-photos';
+const SIGNED_URL_EXPIRY = 315360000; // 10 ans en secondes
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── SCREENS ────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── AUTH ───────────────────────────────────
+db.auth.onAuthStateChange((event, session) => {
+  if (session) {
+    showScreen('appScreen');
+    initMap();
+  } else {
+    showScreen('loginScreen');
+  }
+});
+
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const email = document.getElementById('emailInput').value.trim();
+  const pass  = document.getElementById('passInput').value;
+  const btn   = document.getElementById('loginBtn');
+  const err   = document.getElementById('errMsg');
+
+  if (!email || !pass) { err.textContent = '❌ Remplis l\'email et le mot de passe'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Connexion...';
+  err.textContent = '';
+
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+
+  if (error) {
+    err.textContent = '❌ Email ou mot de passe incorrect';
+    btn.disabled = false;
+    btn.textContent = 'Entrer 🌍';
+  }
+  // if ok, onAuthStateChange handles the rest
+});
+
+document.getElementById('passInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await db.auth.signOut();
+});
+
+// ── MAP ────────────────────────────────────
+let map, markers = [], latlngs = [];
+let mapReady = false;
+
+function initMap() {
+  if (mapReady) { loadTrips(); return; }
+  mapReady = true;
+  map = L.map('map').setView([20, 0], 2);
+  L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+  loadTrips();
+}
+
+async function loadTrips() {
+  markers = []; latlngs = [];
+  map.eachLayer(l => { if (l instanceof L.Marker) map.removeLayer(l); });
+
+  const { data: trips, error } = await db.from('trips').select('*').order('date');
+  if (error) { console.error(error); return; }
+
+  for (const t of trips) {
+    // generate 10-year signed URLs for each photo
+    let photoHtml = '';
+    if (t.photo_paths && t.photo_paths.length > 0) {
+      const { data: signed } = await db.storage
+        .from(BUCKET)
+        .createSignedUrls(t.photo_paths, SIGNED_URL_EXPIRY);
+
+      if (signed) {
+        photoHtml = signed.map(({ signedUrl }) =>
+          `<img src="${signedUrl}" onclick="window.open('${signedUrl}','_blank')">`
+        ).join('');
+      }
+    }
+
+    const dateStr = new Date(t.date).toLocaleDateString('fr-FR', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    const popup = `
+      <b>${t.name}</b><br>
+      <span class="popup-date">${dateStr}</span>
+      <p class="popup-text">${t.description || ''}</p>
+      <div class="gallery">${photoHtml}</div>
+    `;
+
+    latlngs.push([t.lat, t.lng]);
+    const marker = L.marker([t.lat, t.lng]).addTo(map).bindPopup(popup, { maxWidth: 280 });
+    markers.push(marker);
+  }
+
+  if (markers.length > 0)
+    map.fitBounds(L.featureGroup(markers).getBounds(), { padding: [40, 40] });
+}
+
+// replay
+document.getElementById('replayBtn').addEventListener('click', async () => {
+  if (markers.length === 0) return;
+  const route = L.polyline([], { color: '#ff4d88', weight: 5 }).addTo(map);
+  map.closePopup();
+  for (let i = 0; i < latlngs.length; i++) {
+    markers[i].openPopup();
+    route.addLatLng(latlngs[i]);
+    map.panTo(latlngs[i]);
+    await new Promise(r => setTimeout(r, 2000));
+  }
+  map.fitBounds(route.getBounds(), { padding: [40, 40] });
+});
+
+// ── ADD TRIP ───────────────────────────────
+const overlay   = document.getElementById('overlay');
+const sheet     = document.getElementById('sheet');
+let selectedFiles = [];
+
+document.getElementById('addBtn').addEventListener('click', () => {
+  overlay.classList.add('open'); sheet.classList.add('open');
+});
+overlay.addEventListener('click', () => {
+  overlay.classList.remove('open'); sheet.classList.remove('open');
+});
+
+const photoInput  = document.getElementById('photoInput');
+const uploadArea  = document.getElementById('uploadArea');
+const previewGrid = document.getElementById('previewGrid');
+
+uploadArea.addEventListener('click', () => photoInput.click());
+
+photoInput.addEventListener('change', () => {
+  Array.from(photoInput.files).forEach(f => {
+    selectedFiles.push(f);
+    const reader = new FileReader();
+    const idx = selectedFiles.length - 1;
+    reader.onload = e => {
+      const item = document.createElement('div');
+      item.className = 'preview-item';
+      item.innerHTML = `<img src="${e.target.result}"><button class="del-photo" data-idx="${idx}">✕</button>`;
+      previewGrid.appendChild(item);
+    };
+    reader.readAsDataURL(f);
+  });
+  photoInput.value = '';
+});
+
+previewGrid.addEventListener('click', e => {
+  if (e.target.classList.contains('del-photo')) {
+    selectedFiles[parseInt(e.target.dataset.idx)] = null;
+    e.target.parentElement.remove();
+  }
+});
+
+document.getElementById('saveBtn').addEventListener('click', async () => {
+  const name = document.getElementById('tripName').value.trim();
+  const lat  = parseFloat(document.getElementById('tripLat').value);
+  const lng  = parseFloat(document.getElementById('tripLng').value);
+  const date = document.getElementById('tripDate').value;
+  const desc = document.getElementById('tripDesc').value.trim();
+
+  if (!name || isNaN(lat) || isNaN(lng) || !date) {
+    setStatus('❌ Nom, coordonnées et date sont obligatoires', 'err'); return;
+  }
+
+  const saveBtn = document.getElementById('saveBtn');
+  saveBtn.disabled = true;
+  setStatus('📤 Upload des photos...', '');
+
+  const files = selectedFiles.filter(Boolean);
+  const photoPaths = [];
+
+  for (const file of files) {
+    const ext  = file.name.split('.').pop();
+    const slug = name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const path = `${slug}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+    const { error } = await db.storage.from(BUCKET).upload(path, file, {
+      cacheControl: '31536000', upsert: false
+    });
+
+    if (error) {
+      setStatus('❌ Erreur upload: ' + error.message, 'err');
+      saveBtn.disabled = false; return;
+    }
+    photoPaths.push(path);
+  }
+
+  setStatus('💾 Enregistrement...', '');
+
+  const { error } = await db.from('trips').insert({
+    name, lat, lng, date, description: desc, photo_paths: photoPaths
+  });
+
+  if (error) {
+    setStatus('❌ ' + error.message, 'err');
+    saveBtn.disabled = false; return;
+  }
+
+  setStatus('✅ Voyage ajouté !', 'ok');
+  saveBtn.disabled = false;
+
+  ['tripName','tripLat','tripLng','tripDate','tripDesc'].forEach(id =>
+    document.getElementById(id).value = '');
+  previewGrid.innerHTML = '';
+  selectedFiles = [];
+
+  setTimeout(() => {
+    overlay.classList.remove('open');
+    sheet.classList.remove('open');
+    setStatus('', '');
+    loadTrips();
+  }, 1200);
+});
+
+function setStatus(msg, type) {
+  const el = document.getElementById('statusMsg');
+  el.textContent = msg;
+  el.className = 'status-msg ' + type;
+}
+</script>
+</body>
+</html>
