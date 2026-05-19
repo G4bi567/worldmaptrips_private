@@ -13,83 +13,96 @@
       --pink-light: #ffe6f2;
       --pink-mid: #ffc2d9;
       --pink-dark: #cc2d60;
-      --white: #ffffff;
       --text: #3d2030;
       --gray: #888;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Nunito', sans-serif; background: var(--pink-light); height: 100dvh; overflow: hidden; color: var(--text); }
 
     /* ── SCREENS ── */
-    .screen { position: fixed; inset: 0; z-index: 9999; display: none; }
+    .screen { position: fixed; inset: 0; z-index: 9999; display: none; flex-direction: column; }
     .screen.active { display: flex; }
 
-    /* LOGIN */
+    /* ── LOGIN ── */
     #loginScreen {
       background: linear-gradient(160deg, #ffe6f2 0%, #ffd0e8 60%, #ffb3d1 100%);
-      flex-direction: column; align-items: center; justify-content: center; padding: 24px;
+      align-items: center; justify-content: center; padding: 24px;
     }
     .lock-emoji { font-size: 4rem; margin-bottom: 8px; animation: float 3s ease-in-out infinite; }
     @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
     .lock-title { font-family: 'Pacifico', cursive; color: var(--pink); font-size: 2.4rem; text-shadow: 2px 3px 0 rgba(255,255,255,0.8); margin-bottom: 32px; text-align: center; }
     .card { background: white; border-radius: 28px; padding: 32px 28px; box-shadow: 0 12px 50px rgba(255,77,136,0.18); width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 14px; }
     .card label { font-weight: 700; font-size: 0.8rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
-    .card input {
-      width: 100%; padding: 14px 18px; border: 2.5px solid var(--pink-mid);
-      border-radius: 50px; font-size: 1rem; font-family: 'Nunito', sans-serif;
-      outline: none; transition: border-color 0.2s;
-    }
+    .card input { width: 100%; padding: 14px 18px; border: 2.5px solid var(--pink-mid); border-radius: 50px; font-size: 1rem; font-family: 'Nunito', sans-serif; outline: none; transition: border-color 0.2s; }
     .card input:focus { border-color: var(--pink); }
-    .btn-primary {
-      width: 100%; padding: 15px; background: var(--pink); color: white;
-      border: none; border-radius: 50px; font-size: 1.05rem; font-family: 'Nunito', sans-serif;
-      font-weight: 800; cursor: pointer; transition: 0.2s;
-    }
+    .btn-primary { width: 100%; padding: 15px; background: var(--pink); color: white; border: none; border-radius: 50px; font-size: 1.05rem; font-family: 'Nunito', sans-serif; font-weight: 800; cursor: pointer; transition: 0.2s; }
     .btn-primary:hover { background: var(--pink-dark); transform: scale(1.03); }
     .btn-primary:disabled { background: var(--pink-mid); cursor: not-allowed; transform: none; }
     .err-msg { color: #ff0055; font-size: 0.85rem; text-align: center; min-height: 18px; font-weight: 600; }
 
-    /* APP */
-    #appScreen { display: none; flex-direction: column; }
-    #appScreen.active { display: flex; }
-    #map { flex: 1; }
+    /* ── APP ── */
+    #appScreen { position: fixed; inset: 0; display: none; }
+    #appScreen.active { display: block; }
+    #map { position: absolute; inset: 0; }
 
     .topbar {
       position: absolute; top: 0; left: 0; right: 0; z-index: 1000;
       display: flex; align-items: center; justify-content: space-between;
       padding: 14px 16px;
-      background: linear-gradient(to bottom, rgba(255,230,242,0.95) 70%, transparent);
+      background: linear-gradient(to bottom, rgba(255,230,242,0.97) 70%, transparent);
+      pointer-events: none;
     }
     .topbar-title { font-family: 'Pacifico', cursive; color: var(--pink); font-size: 1.6rem; text-shadow: 1px 2px 0 white; }
-    .topbar-actions { display: flex; gap: 8px; }
+    .topbar-actions { display: flex; gap: 8px; pointer-events: all; }
     .icon-btn {
       width: 44px; height: 44px; border-radius: 50%; background: white;
       border: none; font-size: 1.2rem; cursor: pointer;
       box-shadow: 0 3px 15px rgba(255,77,136,0.25);
       display: flex; align-items: center; justify-content: center; transition: 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }
-    .icon-btn:hover { transform: scale(1.1); background: var(--pink-light); }
+    .icon-btn:active { transform: scale(0.93); background: var(--pink-light); }
 
     #addBtn {
-      position: fixed; bottom: 28px; right: 20px; z-index: 10000;
-      pointer-events: all !important;
-      width: 60px; height: 60px; border-radius: 50%;
-      background: var(--pink); color: white; font-size: 2rem;
-      border: none; cursor: pointer; box-shadow: 0 6px 25px rgba(255,77,136,0.5);
-      display: flex; align-items: center; justify-content: center; transition: 0.3s;
+      position: fixed !important;
+      bottom: 28px !important;
+      right: 20px !important;
+      width: 62px !important;
+      height: 62px !important;
+      border-radius: 50% !important;
+      background: #ff4d88 !important;
+      color: white !important;
+      font-size: 2rem !important;
+      border: none !important;
+      cursor: pointer !important;
+      box-shadow: 0 6px 25px rgba(255,77,136,0.55) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 999999 !important;
+      visibility: hidden;
+      pointer-events: none;
+      touch-action: manipulation;
     }
-    #addBtn:hover { transform: scale(1.1) rotate(90deg); background: var(--pink-dark); }
+    #addBtn.visible { visibility: visible !important; pointer-events: all !important; }
+    #addBtn:active { transform: scale(0.92) rotate(90deg); background: var(--pink-dark); }
 
-    /* SHEET */
-    .overlay { position: fixed; inset: 0; background: rgba(61,32,48,0.4); z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-    .overlay.open { opacity: 1; pointer-events: all; }
-    .sheet {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 2001;
-      background: white; border-radius: 28px 28px 0 0;
-      padding: 0 20px 40px; max-height: 92dvh; overflow-y: auto;
-      transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.34,1.2,0.64,1);
+    /* ── OVERLAY + SHEET ── */
+    #overlay {
+      position: fixed; inset: 0; background: rgba(61,32,48,0.45);
+      z-index: 99990; opacity: 0; pointer-events: none; transition: opacity 0.3s;
     }
-    .sheet.open { transform: translateY(0); }
+    #overlay.open { opacity: 1; pointer-events: all; }
+
+    #sheet {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 99999;
+      background: white; border-radius: 28px 28px 0 0;
+      padding: 0 20px 40px; max-height: 94dvh; overflow-y: auto;
+      transform: translateY(100%); transition: transform 0.38s cubic-bezier(0.34,1.15,0.64,1);
+      -webkit-overflow-scrolling: touch;
+    }
+    #sheet.open { transform: translateY(0); }
+
     .sheet-handle { width: 40px; height: 4px; background: var(--pink-mid); border-radius: 4px; margin: 14px auto 20px; }
     .sheet-title { font-family: 'Pacifico', cursive; color: var(--pink); font-size: 1.5rem; margin-bottom: 20px; text-align: center; }
 
@@ -102,44 +115,92 @@
     }
     .field input:focus, .field textarea:focus { border-color: var(--pink); }
     .field textarea { resize: none; height: 80px; }
-    .coords-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+    /* location picker */
+    .location-btn {
+      width: 100%; padding: 13px 16px; background: var(--pink-light);
+      border: 2px dashed var(--pink-mid); border-radius: 14px;
+      font-size: 0.95rem; font-family: 'Nunito', sans-serif; font-weight: 700;
+      color: var(--pink); cursor: pointer; transition: 0.2s; text-align: center;
+    }
+    .location-btn:active { background: var(--pink-mid); }
+    .location-btn.picked { background: #e8faf2; border-color: #2db37a; color: #2db37a; border-style: solid; }
+
+    /* location picker map modal */
+    #pickerModal {
+      position: fixed !important;
+      top: 0 !important; left: 0 !important;
+      right: 0 !important; bottom: 0 !important;
+      width: 100vw !important; height: 100dvh !important;
+      z-index: 9999999 !important;
+      display: none; flex-direction: column;
+      background: white;
+    }
+    #pickerModal.open { display: flex !important; }
+    #pickerTopbar {
+      background: white; padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1; flex-shrink: 0;
+    }
+    #pickerTopbar span { font-weight: 800; font-size: 1rem; flex: 1; }
+    #pickerTopbar small { color: var(--gray); font-size: 0.8rem; }
+    #pickerMap { flex: 1; width: 100%; min-height: 200px; }
+    #pickerCrosshair {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 2.5rem; pointer-events: none; z-index: 999;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    #pickerConfirm {
+      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: var(--pink); color: white; border: none; border-radius: 50px;
+      padding: 14px 36px; font-size: 1rem; font-family: 'Nunito', sans-serif;
+      font-weight: 800; cursor: pointer; z-index: 999;
+      box-shadow: 0 6px 20px rgba(255,77,136,0.4);
+      touch-action: manipulation;
+    }
+    #pickerCancel {
+      background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 4px;
+    }
+
+    /* photo upload */
     .upload-area {
       border: 2.5px dashed var(--pink-mid); border-radius: 14px;
       padding: 20px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--pink-light);
+      touch-action: manipulation;
     }
-    .upload-area:hover { border-color: var(--pink); background: #ffd6e7; }
+    .upload-area:active { border-color: var(--pink); background: #ffd6e7; }
     .upload-area input { display: none; }
     .upload-icon { font-size: 2rem; }
     .upload-area p { font-size: 0.9rem; color: var(--gray); margin-top: 6px; }
-
     .preview-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .preview-item { position: relative; }
     .preview-item img { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; display: block; }
-    .del-photo {
-      position: absolute; top: -6px; right: -6px; width: 20px; height: 20px;
-      background: var(--pink); color: white; border: none; border-radius: 50%;
-      font-size: 0.65rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
+    .del-photo { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; background: var(--pink); color: white; border: none; border-radius: 50%; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    .save-btn {
-      width: 100%; padding: 16px; background: var(--pink); color: white;
-      border: none; border-radius: 50px; font-size: 1.1rem; font-family: 'Nunito', sans-serif;
-      font-weight: 800; cursor: pointer; transition: 0.2s; margin-top: 10px;
-    }
+    .save-btn { width: 100%; padding: 16px; background: var(--pink); color: white; border: none; border-radius: 50px; font-size: 1.1rem; font-family: 'Nunito', sans-serif; font-weight: 800; cursor: pointer; transition: 0.2s; margin-top: 10px; touch-action: manipulation; }
     .save-btn:disabled { background: var(--pink-mid); cursor: not-allowed; }
-    .save-btn:not(:disabled):hover { background: var(--pink-dark); }
-    .status-msg { text-align: center; font-size: 0.9rem; font-weight: 600; margin-top: 8px; min-height: 20px; }
+    .save-btn:not(:disabled):active { background: var(--pink-dark); }
+    .status-msg { text-align: center; font-size: 0.9rem; font-weight: 600; margin-top: 10px; min-height: 20px; }
     .status-msg.ok { color: #2db37a; }
     .status-msg.err { color: #ff0055; }
 
-    /* POPUP */
-    .leaflet-popup-content { font-family: 'Nunito', sans-serif; text-align: center; }
+    /* ── LIGHTBOX ── */
+    #lightbox {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 999998;
+      display: none; align-items: center; justify-content: center;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img { max-width: 95vw; max-height: 90dvh; border-radius: 12px; object-fit: contain; }
+    #lightboxClose { position: absolute; top: 16px; right: 16px; color: white; font-size: 2rem; cursor: pointer; background: none; border: none; }
+
+    /* popup */
+    .leaflet-popup-content { font-family: 'Nunito', sans-serif; text-align: center; min-width: 200px; }
     .popup-date { color: var(--gray); font-size: 0.8rem; }
     .popup-text { margin: 6px 0; font-size: 0.9rem; }
     .gallery { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
-    .gallery img { width: 75px; height: 75px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
-    .gallery img:hover { transform: scale(1.15); }
+    .gallery img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
+    .gallery img:active { transform: scale(1.1); }
   </style>
 </head>
 <body>
@@ -160,6 +221,7 @@
 
 <!-- APP -->
 <div id="appScreen" class="screen">
+  <div id="map"></div>
   <div class="topbar">
     <div class="topbar-title">🌍 Nos Voyages</div>
     <div class="topbar-actions">
@@ -167,13 +229,13 @@
       <button class="icon-btn" id="logoutBtn" title="Déconnexion">🚪</button>
     </div>
   </div>
-  <div id="map"></div>
-  <button id="addBtn">＋</button>
 </div>
 
-<!-- ADD TRIP SHEET -->
-<div class="overlay" id="overlay"></div>
-<div class="sheet" id="sheet">
+<button id="addBtn">＋</button>
+
+<!-- OVERLAY + SHEET -->
+<div id="overlay"></div>
+<div id="sheet">
   <div class="sheet-handle"></div>
   <div class="sheet-title">Nouveau voyage 🗺️</div>
 
@@ -181,19 +243,13 @@
     <label>Nom du lieu</label>
     <input id="tripName" type="text" placeholder="ex: Paris, France" />
   </div>
-  <div class="coords-row">
-    <div class="field">
-      <label>Latitude</label>
-      <input id="tripLat" type="number" step="any" placeholder="48.8566" />
-    </div>
-    <div class="field">
-      <label>Longitude</label>
-      <input id="tripLng" type="number" step="any" placeholder="2.3522" />
-    </div>
+
+  <div class="field">
+    <label>Localisation</label>
+    <button class="location-btn" id="locationBtn" type="button">📍 Choisir sur la carte</button>
+    <small id="coordsDisplay" style="color:var(--gray);font-size:0.8rem;text-align:center;margin-top:4px;display:none"></small>
   </div>
-  <div style="text-align:center;margin:-6px 0 12px;font-size:0.8rem;color:var(--gray)">
-    💡 Trouve les coordonnées sur <a href="https://www.latlong.net" target="_blank" style="color:var(--pink)">latlong.net</a>
-  </div>
+
   <div class="field">
     <label>Date</label>
     <input id="tripDate" type="date" />
@@ -207,7 +263,7 @@
     <div class="upload-area" id="uploadArea">
       <input type="file" id="photoInput" accept="image/*" multiple />
       <div class="upload-icon">📷</div>
-      <p>Appuie ici pour choisir des photos</p>
+      <p>Appuie ici pour ajouter des photos</p>
     </div>
     <div class="preview-grid" id="previewGrid"></div>
   </div>
@@ -216,163 +272,242 @@
   <div class="status-msg" id="statusMsg"></div>
 </div>
 
+
+<!-- EDIT TRIP SHEET -->
+<div id="editOverlay" style="position:fixed;inset:0;background:rgba(61,32,48,0.45);z-index:99990;opacity:0;pointer-events:none;transition:opacity 0.3s;"></div>
+<div id="editSheet" style="position:fixed;bottom:0;left:0;right:0;z-index:99999;background:white;border-radius:28px 28px 0 0;padding:0 20px 40px;max-height:94dvh;overflow-y:auto;transform:translateY(100%);transition:transform 0.38s cubic-bezier(0.34,1.15,0.64,1);">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">Modifier le voyage ✏️</div>
+  <input type="hidden" id="editTripId" />
+  <div class="field">
+    <label>Nom du lieu</label>
+    <input id="editName" type="text" />
+  </div>
+  <div class="field">
+    <label>Date</label>
+    <input id="editDate" type="date" />
+  </div>
+  <div class="field">
+    <label>Description</label>
+    <textarea id="editDesc"></textarea>
+  </div>
+  <button class="save-btn" id="editSaveBtn">Sauvegarder ✅</button>
+  <button class="save-btn" id="editDeleteBtn" style="background:#ff0055;margin-top:10px;">Supprimer ce voyage 🗑️</button>
+  <div class="status-msg" id="editStatusMsg"></div>
+</div>
+
+<!-- LOCATION PICKER MODAL -->
+<div id="pickerModal">
+  <div id="pickerTopbar">
+    <button id="pickerCancel">✕</button>
+    <span>Choisis l'endroit</span>
+    <small>Centre la carte puis confirme</small>
+  </div>
+  <div style="position:relative;flex:1;display:flex;flex-direction:column;">
+    <div id="pickerMap" style="flex:1;width:100%;"></div>
+    <div id="pickerCrosshair">📍</div>
+    <button id="pickerConfirm">✅ Confirmer cet endroit</button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button id="lightboxClose">✕</button>
+  <img id="lightboxImg" src="" alt="" />
+</div>
+
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
 // ══════════════════════════════════════════
-// 🔧 CONFIG — remplace ces 2 valeurs
+// 🔧 CONFIG
 // ══════════════════════════════════════════
 const SUPABASE_URL  = 'https://qtvudrvkyalgbmeicyje.supabase.co';
 const SUPABASE_ANON = 'sb_publishable_WjGnDJ_N0E1jdl9W18qZGQ_HLZlvtz6';
 // ══════════════════════════════════════════
-// Le mot de passe est géré par Supabase Auth
-// → personne ne peut le lire dans le code !
-// ══════════════════════════════════════════
 
 const BUCKET = 'trip-photos';
-const SIGNED_URL_EXPIRY = 315360000; // 10 ans en secondes
+const SIGNED_EXPIRY = 315360000; // 10 years
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// ── SCREENS ────────────────────────────────
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-// ── AUTH ───────────────────────────────────
+// ── AUTH ──────────────────────────────────
 db.auth.onAuthStateChange((event, session) => {
   if (session) {
-    showScreen('appScreen');
+    document.getElementById('loginScreen').classList.remove('active');
+    document.getElementById('appScreen').classList.add('active');
+    document.getElementById('addBtn').classList.add('visible');
     initMap();
   } else {
-    showScreen('loginScreen');
+    document.getElementById('loginScreen').classList.add('active');
+    document.getElementById('appScreen').classList.remove('active');
+    document.getElementById('addBtn').classList.remove('visible');
   }
 });
 
-document.getElementById('loginBtn').addEventListener('click', async () => {
+// Fallback: check session immediately in case onAuthStateChange already fired
+(async () => {
+  const { data: { session } } = await db.auth.getSession();
+  if (session) {
+    document.getElementById('loginScreen').classList.remove('active');
+    document.getElementById('appScreen').classList.add('active');
+    document.getElementById('addBtn').classList.add('visible');
+    initMap();
+  }
+})();
+
+document.getElementById('loginBtn').addEventListener('click', login);
+document.getElementById('passInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+async function login() {
   const email = document.getElementById('emailInput').value.trim();
   const pass  = document.getElementById('passInput').value;
   const btn   = document.getElementById('loginBtn');
   const err   = document.getElementById('errMsg');
-
-  if (!email || !pass) { err.textContent = '❌ Remplis l\'email et le mot de passe'; return; }
-
-  btn.disabled = true;
-  btn.textContent = 'Connexion...';
-  err.textContent = '';
-
+  if (!email || !pass) { err.textContent = '❌ Remplis les deux champs'; return; }
+  btn.disabled = true; btn.textContent = 'Connexion...'; err.textContent = '';
   const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  if (error) { err.textContent = '❌ Email ou mot de passe incorrect'; btn.disabled = false; btn.textContent = 'Entrer 🌍'; }
+}
 
-  if (error) {
-    err.textContent = '❌ Email ou mot de passe incorrect';
-    btn.disabled = false;
-    btn.textContent = 'Entrer 🌍';
-  }
-  // if ok, onAuthStateChange handles the rest
-});
+document.getElementById('logoutBtn').addEventListener('click', () => db.auth.signOut());
 
-document.getElementById('passInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('loginBtn').click();
-});
-
-document.getElementById('logoutBtn').addEventListener('click', async () => {
-  await db.auth.signOut();
-});
-
-// ── MAP ────────────────────────────────────
-let map, markers = [], latlngs = [];
-let mapReady = false;
+// ── MAIN MAP ─────────────────────────────
+let map, markers = [], latlngs = [], mapReady = false;
 
 function initMap() {
   if (mapReady) { loadTrips(); return; }
   mapReady = true;
-  map = L.map('map').setView([20, 0], 2);
+  map = L.map('map', { zoomControl: false }).setView([20, 0], 2);
   L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap'
   }).addTo(map);
+  L.control.zoom({ position: 'bottomleft' }).addTo(map);
   loadTrips();
 }
 
 async function loadTrips() {
+  markers.forEach(m => map.removeLayer(m));
   markers = []; latlngs = [];
-  map.eachLayer(l => { if (l instanceof L.Marker) map.removeLayer(l); });
 
   const { data: trips, error } = await db.from('trips').select('*').order('date');
   if (error) { console.error(error); return; }
 
   for (const t of trips) {
-    // generate 10-year signed URLs for each photo
     let photoHtml = '';
     if (t.photo_paths && t.photo_paths.length > 0) {
-      const { data: signed } = await db.storage
-        .from(BUCKET)
-        .createSignedUrls(t.photo_paths, SIGNED_URL_EXPIRY);
-
+      const { data: signed } = await db.storage.from(BUCKET).createSignedUrls(t.photo_paths, SIGNED_EXPIRY);
       if (signed) {
         photoHtml = signed.map(({ signedUrl }) =>
-          `<img src="${signedUrl}" onclick="window.open('${signedUrl}','_blank')">`
+          `<img src="${signedUrl}" onclick="openLightbox('${signedUrl}')">`
         ).join('');
       }
     }
-
-    const dateStr = new Date(t.date).toLocaleDateString('fr-FR', {
-      year: 'numeric', month: 'long', day: 'numeric'
-    });
-
+    const dateStr = new Date(t.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
     const popup = `
       <b>${t.name}</b><br>
       <span class="popup-date">${dateStr}</span>
       <p class="popup-text">${t.description || ''}</p>
       <div class="gallery">${photoHtml}</div>
+      <button onclick="openEditSheet(${t.id},'${t.name.replace(/'/g,"\'")}','${t.date}',\`${(t.description||'').replace(/`/g,'\`')}\`)" style="margin-top:8px;background:#ff4d88;color:white;border:none;border-radius:20px;padding:6px 16px;font-family:Nunito,sans-serif;font-weight:700;cursor:pointer;font-size:0.85rem;">✏️ Modifier</button>
     `;
-
     latlngs.push([t.lat, t.lng]);
-    const marker = L.marker([t.lat, t.lng]).addTo(map).bindPopup(popup, { maxWidth: 280 });
-    markers.push(marker);
+    const m = L.marker([t.lat, t.lng]).addTo(map).bindPopup(popup, { maxWidth: 300 });
+    markers.push(m);
   }
-
-  if (markers.length > 0)
-    map.fitBounds(L.featureGroup(markers).getBounds(), { padding: [40, 40] });
+  if (markers.length > 0) map.fitBounds(L.featureGroup(markers).getBounds(), { padding: [60, 60] });
 }
 
-// replay
 document.getElementById('replayBtn').addEventListener('click', async () => {
-  if (markers.length === 0) return;
+  if (!markers.length) return;
   const route = L.polyline([], { color: '#ff4d88', weight: 5 }).addTo(map);
   map.closePopup();
   for (let i = 0; i < latlngs.length; i++) {
-    markers[i].openPopup();
-    route.addLatLng(latlngs[i]);
-    map.panTo(latlngs[i]);
+    markers[i].openPopup(); route.addLatLng(latlngs[i]); map.panTo(latlngs[i]);
     await new Promise(r => setTimeout(r, 2000));
   }
-  map.fitBounds(route.getBounds(), { padding: [40, 40] });
+  map.fitBounds(route.getBounds(), { padding: [60, 60] });
 });
 
-// ── ADD TRIP ───────────────────────────────
-const overlay   = document.getElementById('overlay');
-const sheet     = document.getElementById('sheet');
+// ── LIGHTBOX ─────────────────────────────
+function openLightbox(url) {
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+document.getElementById('lightbox').addEventListener('click', () => {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightboxImg').src = '';
+});
+
+// ── ADD TRIP SHEET ────────────────────────
+const addBtn  = document.getElementById('addBtn');
+const overlay = document.getElementById('overlay');
+const sheet   = document.getElementById('sheet');
+
+function openSheet() { overlay.classList.add('open'); sheet.classList.add('open'); }
+function closeSheet() { overlay.classList.remove('open'); sheet.classList.remove('open'); }
+
+addBtn.addEventListener('click', openSheet);
+addBtn.addEventListener('touchend', function(e) { e.preventDefault(); openSheet(); });
+overlay.addEventListener('click', closeSheet);
+
+// ── LOCATION PICKER ───────────────────────
+let pickerMap = null, pickedLat = null, pickedLng = null;
+
+document.getElementById('locationBtn').addEventListener('click', openPicker);
+document.getElementById('locationBtn').addEventListener('touchend', function(e) { e.preventDefault(); openPicker(); });
+
+function openPicker() {
+  document.getElementById('pickerModal').classList.add('open');
+  setTimeout(() => {
+    if (!pickerMap) {
+      pickerMap = L.map('pickerMap', { zoomControl: true }).setView([20, 0], 2);
+      L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(pickerMap);
+    } else {
+      pickerMap.invalidateSize();
+    }
+  }, 100);
+}
+
+document.getElementById('pickerCancel').addEventListener('click', () => {
+  document.getElementById('pickerModal').classList.remove('open');
+});
+
+document.getElementById('pickerConfirm').addEventListener('click', confirmLocation);
+document.getElementById('pickerConfirm').addEventListener('touchend', function(e) { e.preventDefault(); confirmLocation(); });
+
+function confirmLocation() {
+  const center = pickerMap.getCenter();
+  pickedLat = Math.round(center.lat * 100000) / 100000;
+  pickedLng = Math.round(center.lng * 100000) / 100000;
+
+  const btn = document.getElementById('locationBtn');
+  btn.textContent = `✅ ${pickedLat}, ${pickedLng}`;
+  btn.classList.add('picked');
+
+  const display = document.getElementById('coordsDisplay');
+  display.textContent = `lat: ${pickedLat} / lng: ${pickedLng}`;
+  display.style.display = 'block';
+
+  document.getElementById('pickerModal').classList.remove('open');
+}
+
+// ── PHOTOS ───────────────────────────────
 let selectedFiles = [];
-
-document.getElementById('addBtn').addEventListener('click', () => {
-  overlay.classList.add('open'); sheet.classList.add('open');
-});
-overlay.addEventListener('click', () => {
-  overlay.classList.remove('open'); sheet.classList.remove('open');
-});
-
 const photoInput  = document.getElementById('photoInput');
 const uploadArea  = document.getElementById('uploadArea');
 const previewGrid = document.getElementById('previewGrid');
 
 uploadArea.addEventListener('click', () => photoInput.click());
+uploadArea.addEventListener('touchend', function(e) { e.preventDefault(); photoInput.click(); });
 
 photoInput.addEventListener('change', () => {
   Array.from(photoInput.files).forEach(f => {
+    const idx = selectedFiles.length;
     selectedFiles.push(f);
     const reader = new FileReader();
-    const idx = selectedFiles.length - 1;
     reader.onload = e => {
       const item = document.createElement('div');
       item.className = 'preview-item';
@@ -386,21 +521,21 @@ photoInput.addEventListener('change', () => {
 
 previewGrid.addEventListener('click', e => {
   if (e.target.classList.contains('del-photo')) {
-    selectedFiles[parseInt(e.target.dataset.idx)] = null;
+    selectedFiles[+e.target.dataset.idx] = null;
     e.target.parentElement.remove();
   }
 });
 
-document.getElementById('saveBtn').addEventListener('click', async () => {
+// ── SAVE ─────────────────────────────────
+document.getElementById('saveBtn').addEventListener('click', saveTrip);
+
+async function saveTrip() {
   const name = document.getElementById('tripName').value.trim();
-  const lat  = parseFloat(document.getElementById('tripLat').value);
-  const lng  = parseFloat(document.getElementById('tripLng').value);
   const date = document.getElementById('tripDate').value;
   const desc = document.getElementById('tripDesc').value.trim();
 
-  if (!name || isNaN(lat) || isNaN(lng) || !date) {
-    setStatus('❌ Nom, coordonnées et date sont obligatoires', 'err'); return;
-  }
+  if (!name || !date) { setStatus('❌ Nom et date obligatoires', 'err'); return; }
+  if (pickedLat === null) { setStatus('❌ Choisis un endroit sur la carte 📍', 'err'); return; }
 
   const saveBtn = document.getElementById('saveBtn');
   saveBtn.disabled = true;
@@ -413,50 +548,98 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     const ext  = file.name.split('.').pop();
     const slug = name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
     const path = `${slug}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-
-    const { error } = await db.storage.from(BUCKET).upload(path, file, {
-      cacheControl: '31536000', upsert: false
-    });
-
-    if (error) {
-      setStatus('❌ Erreur upload: ' + error.message, 'err');
-      saveBtn.disabled = false; return;
-    }
+    const { error } = await db.storage.from(BUCKET).upload(path, file, { cacheControl: '31536000' });
+    if (error) { setStatus('❌ ' + error.message, 'err'); saveBtn.disabled = false; return; }
     photoPaths.push(path);
   }
 
   setStatus('💾 Enregistrement...', '');
-
-  const { error } = await db.from('trips').insert({
-    name, lat, lng, date, description: desc, photo_paths: photoPaths
-  });
-
-  if (error) {
-    setStatus('❌ ' + error.message, 'err');
-    saveBtn.disabled = false; return;
-  }
+  const { error } = await db.from('trips').insert({ name, lat: pickedLat, lng: pickedLng, date, description: desc, photo_paths: photoPaths });
+  if (error) { setStatus('❌ ' + error.message, 'err'); saveBtn.disabled = false; return; }
 
   setStatus('✅ Voyage ajouté !', 'ok');
   saveBtn.disabled = false;
 
-  ['tripName','tripLat','tripLng','tripDate','tripDesc'].forEach(id =>
-    document.getElementById(id).value = '');
+  // reset
+  ['tripName','tripDate','tripDesc'].forEach(id => document.getElementById(id).value = '');
   previewGrid.innerHTML = '';
   selectedFiles = [];
+  pickedLat = pickedLng = null;
+  const lb = document.getElementById('locationBtn');
+  lb.textContent = '📍 Choisir sur la carte'; lb.classList.remove('picked');
+  document.getElementById('coordsDisplay').style.display = 'none';
 
-  setTimeout(() => {
-    overlay.classList.remove('open');
-    sheet.classList.remove('open');
-    setStatus('', '');
-    loadTrips();
-  }, 1200);
-});
+  setTimeout(() => { closeSheet(); setStatus('', ''); loadTrips(); }, 1200);
+}
 
 function setStatus(msg, type) {
   const el = document.getElementById('statusMsg');
-  el.textContent = msg;
-  el.className = 'status-msg ' + type;
+  el.textContent = msg; el.className = 'status-msg ' + type;
 }
+
+// ── EDIT / DELETE ─────────────────────────
+const editOverlay = document.getElementById('editOverlay');
+const editSheet   = document.getElementById('editSheet');
+
+function openEditSheet(id, name, date, desc) {
+  document.getElementById('editTripId').value = id;
+  document.getElementById('editName').value   = name;
+  document.getElementById('editDate').value   = date;
+  document.getElementById('editDesc').value   = desc;
+  map.closePopup();
+  editOverlay.style.opacity = '1';
+  editOverlay.style.pointerEvents = 'all';
+  editSheet.style.transform = 'translateY(0)';
+}
+
+function closeEditSheet() {
+  editOverlay.style.opacity = '0';
+  editOverlay.style.pointerEvents = 'none';
+  editSheet.style.transform = 'translateY(100%)';
+  document.getElementById('editStatusMsg').textContent = '';
+}
+
+editOverlay.addEventListener('click', closeEditSheet);
+
+document.getElementById('editSaveBtn').addEventListener('click', async () => {
+  const id   = document.getElementById('editTripId').value;
+  const name = document.getElementById('editName').value.trim();
+  const date = document.getElementById('editDate').value;
+  const desc = document.getElementById('editDesc').value.trim();
+  if (!name || !date) { setEditStatus('❌ Nom et date obligatoires', 'err'); return; }
+
+  const btn = document.getElementById('editSaveBtn');
+  btn.disabled = true;
+  setEditStatus('💾 Sauvegarde...', '');
+
+  const { error } = await db.from('trips').update({ name, date, description: desc }).eq('id', id);
+  if (error) { setEditStatus('❌ ' + error.message, 'err'); btn.disabled = false; return; }
+
+  setEditStatus('✅ Modifié !', 'ok');
+  btn.disabled = false;
+  setTimeout(() => { closeEditSheet(); loadTrips(); }, 1000);
+});
+
+document.getElementById('editDeleteBtn').addEventListener('click', async () => {
+  const id = document.getElementById('editTripId').value;
+  if (!confirm('Supprimer ce voyage ? Cette action est irréversible.')) return;
+
+  const btn = document.getElementById('editDeleteBtn');
+  btn.disabled = true;
+  setEditStatus('🗑️ Suppression...', '');
+
+  const { error } = await db.from('trips').delete().eq('id', id);
+  if (error) { setEditStatus('❌ ' + error.message, 'err'); btn.disabled = false; return; }
+
+  setEditStatus('✅ Supprimé !', 'ok');
+  setTimeout(() => { closeEditSheet(); loadTrips(); }, 800);
+});
+
+function setEditStatus(msg, type) {
+  const el = document.getElementById('editStatusMsg');
+  el.textContent = msg; el.className = 'status-msg ' + type;
+}
+
 </script>
 </body>
 </html>
