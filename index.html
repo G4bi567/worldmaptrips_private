@@ -71,7 +71,8 @@
     .icon-btn:hover { transform: scale(1.1); background: var(--pink-light); }
 
     #addBtn {
-      position: absolute; bottom: 28px; right: 20px; z-index: 1000;
+      position: fixed; bottom: 28px; right: 20px; z-index: 10000;
+      pointer-events: all !important;
       width: 60px; height: 60px; border-radius: 50%;
       background: var(--pink); color: white; font-size: 2rem;
       border: none; cursor: pointer; box-shadow: 0 6px 25px rgba(255,77,136,0.5);
@@ -220,8 +221,8 @@
 // ══════════════════════════════════════════
 // 🔧 CONFIG — remplace ces 2 valeurs
 // ══════════════════════════════════════════
-const SUPABASE_URL  = 'https://qtvudrvkyalgbmeicyje.supabase.co';
-const SUPABASE_ANON = 'sb_publishable_WjGnDJ_N0E1jdl9W18qZGQ_HLZlvtz6';
+const SUPABASE_URL  = 'https://VOTRE_PROJET.supabase.co';
+const SUPABASE_ANON = 'VOTRE_ANON_KEY';
 // ══════════════════════════════════════════
 // Le mot de passe est géré par Supabase Auth
 // → personne ne peut le lire dans le code !
